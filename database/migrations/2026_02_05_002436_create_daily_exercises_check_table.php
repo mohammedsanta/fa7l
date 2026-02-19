@@ -14,10 +14,16 @@ return new class extends Migration
 Schema::create('daily_exercises_check', function (Blueprint $table) {
     $table->id();
     $table->foreignId('daily_log_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
     $table->boolean('did_exercise')->default(false);
     $table->boolean('did_face_exercise')->default(false);
     $table->boolean('did_body_exercise')->default(false);
+
+    $table->string('date');
+    $table->string('reason')->nullable();
+    $table->enum('status', ['rest', 'trained']);
+
 
     $table->timestamps();
 });

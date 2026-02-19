@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testosterone Boosting Foods</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.07);
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+}
+
+.food-name {
+    font-size: 16px;
+}
+
+.progress {
+    height: 12px;
+    background: #333;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #00ff88;
+    transition: width 0.4s ease;
+}
+
+.score {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    background: #ff9800;
+    color: black;
+}
+</style>
+</head>
+<body>
+
+<h1>🔥 Testosterone Boosting Foods</h1>
+<p>Select the foods you ate today</p>
+
+<div class="container" id="foodList"></div>
+
+<div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div class="score" id="scoreText">
+    Testosterone Support: 0%
+</div>
+
+<button onclick="resetSelection()">Reset</button>
+
+<script>
+const foods = [
+    { name: "🥚 Eggs", value: 10 },
+    { name: "🥩 Red Meat", value: 15 },
+    { name: "🐟 Salmon", value: 15 },
+    { name: "🐟 Tuna", value: 12 },
+    { name: "🦪 Oysters", value: 20 },
+    { name: "🥬 Spinach", value: 10 },
+    { name: "🥑 Avocado", value: 8 },
+    { name: "🫒 Olive Oil", value: 8 },
+    { name: "🌰 Almonds", value: 7 },
+    { name: "🧄 Garlic", value: 6 },
+    { name: "🍎 Pomegranate", value: 5 },
+    { name: "🍯 Honey", value: 4 }
+];
+
+const maxScore = foods.reduce((sum, food) => sum + food.value, 0);
+
+function renderFoods() {
+    const container = document.getElementById("foodList");
+    container.innerHTML = "";
+
+    foods.forEach((food, index) => {
+        container.innerHTML += `
+            <div class="food-item">
+                <div class="food-name">${food.name}</div>
+                <input type="checkbox" onchange="updateScore()" id="food-${index}">
+            </div>
+        `;
+    });
+}
+
+function updateScore() {
+    let total = 0;
+
+    foods.forEach((food, index) => {
+        const checkbox = document.getElementById(`food-${index}`);
+        if (checkbox.checked) {
+            total += food.value;
+        }
+    });
+
+    let percent = Math.round((total / maxScore) * 100);
+
+    const progressBar = document.getElementById("progressBar");
+    const scoreText = document.getElementById("scoreText");
+
+    progressBar.style.width = percent + "%";
+
+    if (percent < 40) {
+        progressBar.style.background = "red";
+    } else if (percent < 70) {
+        progressBar.style.background = "orange";
+    } else {
+        progressBar.style.background = "#00ff88";
+    }
+
+    scoreText.innerText = "Testosterone Support: " + percent + "%";
+}
+
+function resetSelection() {
+    foods.forEach((food, index) => {
+        document.getElementById(`food-${index}`).checked = false;
+    });
+    updateScore();
+}
+
+renderFoods();
+</script>
+
+</body>
+</html>

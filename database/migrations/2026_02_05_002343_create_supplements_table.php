@@ -14,6 +14,8 @@ return new class extends Migration
 Schema::create('supplements', function (Blueprint $table) {
     $table->id();
     $table->string('name');
+    $table->string('dose');
+    $table->string('focus');
     $table->timestamps();
 });
 

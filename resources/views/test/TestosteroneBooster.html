@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥗 Testosterone Recipes Advanced</title>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  text-align:center;
+}
+h1{margin-bottom:10px;}
+.container{
+  max-width:900px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:12px;
+}
+.recipe-container{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  justify-content:center;
+  margin-top:15px;
+}
+.recipe-box{
+  background:rgba(255,255,255,0.08);
+  padding:15px;
+  border-radius:12px;
+  width:270px;
+  text-align:center;
+}
+.recipe-box img{
+  width:100px;
+  height:100px;
+  border-radius:12px;
+  margin-bottom:10px;
+}
+.ingredient{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  font-size:14px;
+}
+.add-ingredient{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:10px;
+}
+.add-ingredient select,input{
+  padding:5px;
+  border-radius:6px;
+  border:none;
+}
+button{
+  cursor:pointer;
+  background:#ff5722;
+  color:#fff;
+  border:none;
+  padding:5px 10px;
+  border-radius:6px;
+}
+.progress{
+  height:16px;
+  background:#333;
+  border-radius:8px;
+  margin-top:15px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#00ff88;
+  transition:0.4s;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>🥗 Testosterone Recipes Advanced</h1>
+<p>Select recipe type, add ingredients, choose quantity method (grams or level).</p>
+
+<button onclick="addNewRecipe()">+ New Recipe</button>
+
+<div class="recipe-container" id="recipeContainer"></div>
+
+<div class="progress">
+  <div class="progress-bar" id="recipeProgress"></div>
+</div>
+
+<p id="recipeScore" style="margin-top:10px;font-weight:bold;">Total Recipe Impact: 0%</p>
+
+</div>
+
+<script>
+// ----------------- المكونات -----------------
+const ingredients = {
+  juice:[
+    {name:"🍉 Pomegranate", percent:8},
+    {name:"🥤 Orange", percent:7},
+    {name:"🌿 Ginger", percent:6},
+    {name:"🥑 Avocado", percent:5},
+    {name:"🌰 Nuts", percent:4}
+  ],
+  solid:[
+    {name:"🦪 Oysters", percent:15},
+    {name:"🥩 Lean Beef", percent:12},
+    {name:"🍳 Eggs", percent:10},
+    {name:"🥑 Avocado", percent:8},
+    {name:"🧄 Garlic", percent:5},
+    {name:"🌰 Nuts", percent:7}
+  ]
+};
+
+const qtyLevels = {low:25, medium:50, high:75, veryhigh:100};
+
+let recipes=[];
+
+// ----------------- إضافة وصفة جديدة -----------------
+function addNewRecipe(){
+  const recipe={id:Date.now(),ingredients:[],type:"juice",qtyMode:"grams"};
+  recipes.push(recipe);
+  renderRecipes();
+}
+
+// ----------------- عرض الوصفات -----------------
+function renderRecipes(){
+  const container=document.getElementById("recipeContainer");
+  container.innerHTML="";
+  recipes.forEach(r=>{
+    const typeIngredients = ingredients[r.type];
+    container.innerHTML+=`
+      <div class="recipe-box" id="recipe-${r.id}">
+        <img src="${r.type==='juice'?'https://cdn-icons-png.flaticon.com/512/414/414927.png':'https://cdn-icons-png.flaticon.com/512/135/135621.png'}" alt="Recipe">
+        <h3>Recipe (${r.type==='juice'?'Juice':'Solid Food'})</h3>
+        <label>Type:
+          <select onchange="changeType(${r.id},this.value)">
+            <option value="juice" ${r.type==='juice'?'selected':''}>Juice</option>
+            <option value="solid" ${r.type==='solid'?'selected':''}>Solid Food</option>
+          </select>
+        </label>
+        <label>Quantity Mode:
+          <select onchange="changeQtyMode(${r.id},this.value)">
+            <option value="grams" ${r.qtyMode==='grams'?'selected':''}>Grams</option>
+            <option value="level" ${r.qtyMode==='level'?'selected':''}>Level</option>
+          </select>
+        </label>
+        <div class="ingredients" id="ing-${r.id}"></div>
+        <div class="add-ingredient">
+          <select id="select-${r.id}">${typeIngredients.map(i=>`<option value="${i.name}">${i.name}</option>`).join('')}</select>
+          <input type="number" min="1" value="50" id="qty-${r.id}" placeholder="grams">
+          <select id="level-${r.id}">
+            <option value="none">None</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="veryhigh">Very High</option>
+          </select>
+          <button onclick="addIngredient(${r.id})">Add</button>
+        </div>
+      </div>
+    `;
+    updateRecipe(r.id);
+  });
+}
+
+// ----------------- تغيير النوع -----------------
+function changeType(id,type){
+  const r=recipes.find(r=>r.id===id);
+  r.type=type;
+  renderRecipes();
+}
+
+// ----------------- تغيير طريقة الكمية -----------------
+function changeQtyMode(id,mode){
+  const r=recipes.find(r=>r.id===id);
+  r.qtyMode=mode;
+  renderRecipes();
+}
+
+// ----------------- إضافة مكونات -----------------
+function addIngredient(id){
+  const r=recipes.find(r=>r.id===id);
+  const name=document.getElementById(`select-${id}`).value;
+  let qty;
+  if(r.qtyMode==="grams"){
+    qty = Number(document.getElementById(`qty-${id}`).value);
+  } else {
+    const level=document.getElementById(`level-${id}`).value;
+    qty = qtyLevels[level]||0;
+  }
+  const typeIngredients = ingredients[r.type];
+  const ing = typeIngredients.find(i=>i.name===name);
+  if(!ing) return; // safety
+  if(!r.ingredients.some(i=>i.name===name)) r.ingredients.push({name,percent:ing.percent,qty});
+  else r.ingredients=r.ingredients.map(i=>i.name===name?{...i,qty}:i);
+  updateRecipe(id);
+  updateTotalScore();
+}
+
+// ----------------- تحديث وصفة -----------------
+function updateRecipe(id){
+  const r=recipes.find(r=>r.id===id);
+  const container=document.getElementById(`ing-${id}`);
+  container.innerHTML="";
+  r.ingredients.forEach(i=>{
+    container.innerHTML+=`<div class="ingredient"><span>${i.name}</span><span>${i.qty}g</span></div>`;
+  });
+}
+
+// ----------------- حساب التأثير -----------------
+function updateTotalScore(){
+  let total=0;
+  recipes.forEach(r=>r.ingredients.forEach(i=>{
+    total+=i.percent*(i.qty/50);
+  }));
+  total=Math.round(total);
+  document.getElementById("recipeProgress").style.width=total+"%";
+  document.getElementById("recipeScore").innerText="Total Recipe Impact: "+total+"%";
+}
+
+// ----------------- بداية -----------------
+addNewRecipe();
+</script>
+
+</body>
+</html>

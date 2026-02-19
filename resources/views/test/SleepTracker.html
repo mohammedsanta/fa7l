@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sleep Tracker</title>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#1f1c2c,#928dab);
+  color:#fff;
+  text-align:center;
+}
+h1{margin-bottom:5px}
+.container{
+  max-width:1000px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:12px;
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+select,input,button{
+  padding:8px 12px;
+  border-radius:6px;
+  border:none;
+  font-weight:bold;
+}
+button{
+  cursor:pointer;
+  background:#2979ff;
+  color:#fff;
+}
+.sleep-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  text-align:left;
+  margin-top:15px;
+}
+.sleep-item{
+  background:rgba(255,255,255,0.08);
+  padding:12px;
+  border-radius:8px;
+}
+.sleep-item label{
+  display:block;
+  margin-bottom:6px;
+}
+.progress{
+  height:16px;
+  background:#333;
+  border-radius:8px;
+  margin-top:15px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#00e676;
+  transition:0.4s;
+}
+.summary{
+  margin-top:20px;
+  text-align:left;
+}
+</style>
+</head>
+<body>
+
+<h1>😴 Testosterone Sleep Tracker</h1>
+<p>Select day and log your sleep details.</p>
+
+<div class="container">
+
+  <div class="controls">
+    <select id="daySelect">
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+
+    <button onclick="saveDay()">Save Day</button>
+    <button onclick="clearWeek()">Reset Week</button>
+  </div>
+
+  <div class="sleep-list">
+    <div class="sleep-item">
+      <label for="sleepTime">🛌 Bedtime (24h format)</label>
+      <input type="time" id="sleepTime" onchange="updateSleep()">
+    </div>
+    <div class="sleep-item">
+      <label for="wakeTime">⏰ Wake-up Time</label>
+      <input type="time" id="wakeTime" onchange="updateSleep()">
+    </div>
+    <div class="sleep-item">
+      <label>💤 Sleep Duration: <span id="sleepDuration">0h 0m</span></label>
+    </div>
+    <div class="sleep-item">
+      <label for="sleepQuality">🌙 Sleep Quality</label>
+      <select id="sleepQuality" onchange="updateSleepScore()">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <div class="sleep-item">
+      <label for="wakeMidNight">🌃 Woke up due to noise?</label>
+      <select id="wakeMidNight" onchange="updateSleepScore()">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+    </div>
+    <div class="sleep-item">
+      <label for="difficultySleeping">😣 Difficulty sleeping (stress/pressure)?</label>
+      <select id="difficultySleeping" onchange="updateSleepScore()">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="dayScore" style="margin-top:10px;font-weight:bold;">
+    Day Sleep Impact: 0%
+  </div>
+
+  <div class="summary">
+    <h3>📊 Weekly Summary</h3>
+    <p id="weeklyAverage">Average: 0%</p>
+    <p id="bestDay">Best Day: -</p>
+    <p id="worstDay">Worst Day: -</p>
+  </div>
+
+</div>
+
+<script>
+
+const qualityMultiplier = {low:0.5, medium:1, high:1.5};
+const penaltyYes = 0.7; // wake up mid-night or difficulty sleeping reduces score
+
+function timeToMinutes(timeStr){
+  if(!timeStr)return 0;
+  const [h,m]=timeStr.split(":").map(Number);
+  return h*60 + m;
+}
+
+function updateSleep(){
+  const sleepTime=document.getElementById("sleepTime").value;
+  const wakeTime=document.getElementById("wakeTime").value;
+  let sleepMins=0;
+  if(sleepTime && wakeTime){
+    let sleepMinutes = timeToMinutes(wakeTime) - timeToMinutes(sleepTime);
+    if(sleepMinutes<0) sleepMinutes += 24*60;
+    const hours=Math.floor(sleepMinutes/60);
+    const mins=sleepMinutes%60;
+    document.getElementById("sleepDuration").innerText=`${hours}h ${mins}m`;
+  }
+  updateSleepScore();
+}
+
+function updateSleepScore(){
+  const sleepTime=document.getElementById("sleepTime").value;
+  const wakeTime=document.getElementById("wakeTime").value;
+  if(!sleepTime || !wakeTime) return;
+
+  let sleepMinutes = timeToMinutes(wakeTime) - timeToMinutes(sleepTime);
+  if(sleepMinutes<0) sleepMinutes += 24*60;
+
+  // Sleep score 0-100
+  let score = (sleepMinutes/480)*100; // 8 hours ideal = 100%
+  const quality=document.getElementById("sleepQuality").value;
+  score *= qualityMultiplier[quality];
+
+  const wakeMidNight=document.getElementById("wakeMidNight").value;
+  const difficulty=document.getElementById("difficultySleeping").value;
+  if(wakeMidNight==="yes") score *= penaltyYes;
+  if(difficulty==="yes") score *= penaltyYes;
+
+  score = Math.round(Math.min(score,100));
+  document.getElementById("progressBar").style.width=score+"%";
+  document.getElementById("dayScore").innerText=`Day Sleep Impact: ${score}%`;
+}
+
+function saveDay(){
+  const day=document.getElementById("daySelect").value;
+  const score=parseInt(document.getElementById("dayScore").innerText.replace(/\D/g,''));
+  let weekData=JSON.parse(localStorage.getItem("sleepWeekData"))||{};
+  weekData[day]=score;
+  localStorage.setItem("sleepWeekData",JSON.stringify(weekData));
+  calculateWeekly();
+  alert("Saved ✔️");
+}
+
+function calculateWeekly(){
+  let weekData=JSON.parse(localStorage.getItem("sleepWeekData"))||{};
+  let values=Object.values(weekData);
+  if(values.length===0){
+    document.getElementById("weeklyAverage").innerText="Average: 0%";
+    document.getElementById("bestDay").innerText="Best Day: -";
+    document.getElementById("worstDay").innerText="Worst Day: -";
+    return;
+  }
+
+  let avg=Math.round(values.reduce((a,b)=>a+b,0)/values.length);
+  document.getElementById("weeklyAverage").innerText="Average: "+avg+"%";
+
+  let bestDay=Object.keys(weekData).reduce((a,b)=>weekData[a]>weekData[b]?a:b);
+  let worstDay=Object.keys(weekData).reduce((a,b)=>weekData[a]<weekData[b]?a:b);
+
+  document.getElementById("bestDay").innerText="Best Day: "+bestDay+" ("+weekData[bestDay]+"%)";
+  document.getElementById("worstDay").innerText="Worst Day: "+worstDay+" ("+weekData[worstDay]+"%)";
+}
+
+function clearWeek(){
+  localStorage.removeItem("sleepWeekData");
+  calculateWeekly();
+  alert("Week Reset ✔️");
+}
+
+calculateWeekly();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testosterone Tracker Pro</title>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  text-align:center;
+}
+h1{margin-bottom:5px}
+.container{
+  max-width:1100px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:12px;
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+select,button{
+  padding:8px 12px;
+  border-radius:6px;
+  border:none;
+  font-weight:bold;
+}
+button{
+  cursor:pointer;
+  background:#ff9800;
+  color:#000;
+}
+.food-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:10px;
+  margin-top:15px;
+}
+.food-item{
+  background:rgba(255,255,255,0.08);
+  padding:10px;
+  border-radius:8px;
+  text-align:left;
+}
+.food-item span{
+  display:block;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+.progress{
+  height:16px;
+  background:#333;
+  border-radius:8px;
+  margin-top:15px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#00ff88;
+  transition:0.4s;
+}
+.summary{
+  margin-top:20px;
+  text-align:left;
+}
+.quantity{
+  width:100%;
+}
+</style>
+</head>
+<body>
+
+<h1>🔥 Testosterone Daily & Weekly Tracker</h1>
+<p>Select a day, choose quantities, then save.</p>
+
+<div class="container">
+
+  <div class="controls">
+    <select id="daySelect">
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+
+    <button onclick="saveDay()">Save Day</button>
+    <button onclick="clearWeek()">Reset Week</button>
+  </div>
+
+  <div class="food-list" id="foodList"></div>
+
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="dayScore" style="margin-top:10px;font-weight:bold;">
+    Day Support: 0%
+  </div>
+
+  <div class="summary">
+    <h3>📊 Weekly Summary</h3>
+    <p id="weeklyAverage">Average: 0%</p>
+    <p id="bestDay">Best Day: -</p>
+    <p id="worstDay">Worst Day: -</p>
+  </div>
+
+</div>
+
+<script>
+
+const foods = [
+{ name:"🦪 Oysters", percent:90 },
+{ name:"🐟 Tuna", percent:80 },
+{ name:"🐟 Salmon", percent:75 },
+{ name:"🥩 Lean Beef", percent:70 },
+{ name:"🍳 Eggs", percent:65 },
+{ name:"🍉 Pomegranate", percent:60 },
+{ name:"🧄 Garlic", percent:55 },
+{ name:"🌿 Ginger", percent:50 },
+{ name:"🥬 Spinach", percent:45 },
+{ name:"🥑 Avocado", percent:40 },
+{ name:"🌰 Nuts", percent:35 },
+{ name:"🍯 Honey", percent:30 },
+{ name:"🥦 Broccoli", percent:30 }
+];
+
+const multipliers = {
+  "none":0,
+  "low":0.5,
+  "medium":1,
+  "high":1.5
+};
+
+const maxScore = foods.reduce((sum,f)=>sum+(f.percent*1.5),0);
+
+function renderFoods(){
+  const container=document.getElementById("foodList");
+  container.innerHTML="";
+  foods.forEach((food,index)=>{
+    container.innerHTML+=`
+      <div class="food-item">
+        <span>${food.name} (${food.percent}%)</span>
+        <select class="quantity" onchange="updateDayScore()" id="food-${index}">
+          <option value="none">لم آكل</option>
+          <option value="low">قليل</option>
+          <option value="medium">متوسط</option>
+          <option value="high">كثير</option>
+        </select>
+      </div>
+    `;
+  });
+}
+
+function updateDayScore(){
+  let total=0;
+  foods.forEach((food,index)=>{
+    const qty=document.getElementById(`food-${index}`).value;
+    total+=food.percent*multipliers[qty];
+  });
+  let percent=Math.round((total/maxScore)*100);
+  document.getElementById("progressBar").style.width=percent+"%";
+  document.getElementById("dayScore").innerText="Day Support: "+percent+"%";
+}
+
+function saveDay(){
+  const day=document.getElementById("daySelect").value;
+  const percent=parseInt(document.getElementById("dayScore").innerText.replace(/\D/g,''));
+  let weekData=JSON.parse(localStorage.getItem("weekData"))||{};
+  weekData[day]=percent;
+  localStorage.setItem("weekData",JSON.stringify(weekData));
+  calculateWeekly();
+  alert("Saved ✔️");
+}
+
+function calculateWeekly(){
+  let weekData=JSON.parse(localStorage.getItem("weekData"))||{};
+  let values=Object.values(weekData);
+  if(values.length===0){
+    document.getElementById("weeklyAverage").innerText="Average: 0%";
+    document.getElementById("bestDay").innerText="Best Day: -";
+    document.getElementById("worstDay").innerText="Worst Day: -";
+    return;
+  }
+
+  let avg=Math.round(values.reduce((a,b)=>a+b,0)/values.length);
+  document.getElementById("weeklyAverage").innerText="Average: "+avg+"%";
+
+  let bestDay=Object.keys(weekData).reduce((a,b)=>weekData[a]>weekData[b]?a:b);
+  let worstDay=Object.keys(weekData).reduce((a,b)=>weekData[a]<weekData[b]?a:b);
+
+  document.getElementById("bestDay").innerText="Best Day: "+bestDay+" ("+weekData[bestDay]+"%)";
+  document.getElementById("worstDay").innerText="Worst Day: "+worstDay+" ("+weekData[worstDay]+"%)";
+}
+
+function clearWeek(){
+  localStorage.removeItem("weekData");
+  calculateWeekly();
+  alert("Week Reset ✔️");
+}
+
+renderFoods();
+calculateWeekly();
+
+</script>
+
+</body>
+</html>

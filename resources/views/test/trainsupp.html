@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testosterone Workout Tracker</title>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#141e30,#243b55);
+  color:#fff;
+  text-align:center;
+}
+h1{margin-bottom:5px}
+.container{
+  max-width:1100px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:12px;
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+select,button{
+  padding:8px 12px;
+  border-radius:6px;
+  border:none;
+  font-weight:bold;
+}
+button{
+  cursor:pointer;
+  background:#00c853;
+  color:#000;
+}
+.exercise-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:10px;
+  margin-top:15px;
+}
+.exercise-item{
+  background:rgba(255,255,255,0.08);
+  padding:10px;
+  border-radius:8px;
+  text-align:left;
+}
+.exercise-item span{
+  display:block;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+.progress{
+  height:16px;
+  background:#333;
+  border-radius:8px;
+  margin-top:15px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#ff3d00;
+  transition:0.4s;
+}
+.summary{
+  margin-top:20px;
+  text-align:left;
+}
+.quantity{
+  width:100%;
+}
+</style>
+</head>
+<body>
+
+<h1>🏋️ Testosterone Workout Tracker</h1>
+<p>Select a day and workout intensity.</p>
+
+<div class="container">
+
+  <div class="controls">
+    <select id="daySelect">
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+
+    <button onclick="saveDay()">Save Day</button>
+    <button onclick="clearWeek()">Reset Week</button>
+  </div>
+
+  <div class="exercise-list" id="exerciseList"></div>
+
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="dayScore" style="margin-top:10px;font-weight:bold;">
+    Day Training Impact: 0%
+  </div>
+
+  <div class="summary">
+    <h3>📊 Weekly Summary</h3>
+    <p id="weeklyAverage">Average: 0%</p>
+    <p id="bestDay">Best Day: -</p>
+    <p id="worstDay">Worst Day: -</p>
+  </div>
+
+</div>
+
+<script>
+
+const exercises = [
+{ name:"🏋️ Squats", percent:90 },
+{ name:"💀 Deadlifts", percent:95 },
+{ name:"🏋️ Bench Press", percent:80 },
+{ name:"💪 Pull Ups", percent:70 },
+{ name:"⚡ Sprints", percent:85 },
+{ name:"🔥 HIIT", percent:90 },
+{ name:"🏋️ Overhead Press", percent:75 },
+{ name:"🚣 Barbell Rows", percent:70 },
+{ name:"🦵 Lunges", percent:65 },
+{ name:"🔔 Kettlebell Swings", percent:80 },
+{ name:"🤸 Burpees", percent:75 }
+];
+
+const multipliers = {
+  "none":0,
+  "light":0.5,
+  "medium":1,
+  "high":1.5
+};
+
+const maxScore = exercises.reduce((sum,e)=>sum+(e.percent*1.5),0);
+
+function renderExercises(){
+  const container=document.getElementById("exerciseList");
+  container.innerHTML="";
+  exercises.forEach((exercise,index)=>{
+    container.innerHTML+=`
+      <div class="exercise-item">
+        <span>${exercise.name} (${exercise.percent}%)</span>
+        <select class="quantity" onchange="updateDayScore()" id="ex-${index}">
+          <option value="none">لم أتمرن</option>
+          <option value="light">خفيف</option>
+          <option value="medium">متوسط</option>
+          <option value="high">عالي الشدة</option>
+        </select>
+      </div>
+    `;
+  });
+}
+
+function updateDayScore(){
+  let total=0;
+  exercises.forEach((exercise,index)=>{
+    const qty=document.getElementById(`ex-${index}`).value;
+    total+=exercise.percent*multipliers[qty];
+  });
+  let percent=Math.round((total/maxScore)*100);
+  document.getElementById("progressBar").style.width=percent+"%";
+  document.getElementById("dayScore").innerText="Day Training Impact: "+percent+"%";
+}
+
+function saveDay(){
+  const day=document.getElementById("daySelect").value;
+  const percent=parseInt(document.getElementById("dayScore").innerText.replace(/\D/g,''));
+  let weekData=JSON.parse(localStorage.getItem("workoutWeekData"))||{};
+  weekData[day]=percent;
+  localStorage.setItem("workoutWeekData",JSON.stringify(weekData));
+  calculateWeekly();
+  alert("Saved ✔️");
+}
+
+function calculateWeekly(){
+  let weekData=JSON.parse(localStorage.getItem("workoutWeekData"))||{};
+  let values=Object.values(weekData);
+  if(values.length===0){
+    document.getElementById("weeklyAverage").innerText="Average: 0%";
+    document.getElementById("bestDay").innerText="Best Day: -";
+    document.getElementById("worstDay").innerText="Worst Day: -";
+    return;
+  }
+
+  let avg=Math.round(values.reduce((a,b)=>a+b,0)/values.length);
+  document.getElementById("weeklyAverage").innerText="Average: "+avg+"%";
+
+  let bestDay=Object.keys(weekData).reduce((a,b)=>weekData[a]>weekData[b]?a:b);
+  let worstDay=Object.keys(weekData).reduce((a,b)=>weekData[a]<weekData[b]?a:b);
+
+  document.getElementById("bestDay").innerText="Best Day: "+bestDay+" ("+weekData[bestDay]+"%)";
+  document.getElementById("worstDay").innerText="Worst Day: "+worstDay+" ("+weekData[worstDay]+"%)";
+}
+
+function clearWeek(){
+  localStorage.removeItem("workoutWeekData");
+  calculateWeekly();
+  alert("Week Reset ✔️");
+}
+
+renderExercises();
+calculateWeekly();
+
+</script>
+
+</body>
+</html>

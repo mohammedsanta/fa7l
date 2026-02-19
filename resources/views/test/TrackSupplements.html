@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💊 Testosterone Supplements Tracker</title>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  text-align:center;
+}
+h1{margin-bottom:5px}
+.container{
+  max-width:1100px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:20px;
+  border-radius:12px;
+}
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+select,button{
+  padding:8px 12px;
+  border-radius:6px;
+  border:none;
+  font-weight:bold;
+}
+button{
+  cursor:pointer;
+  background:#ff9800;
+  color:#000;
+}
+.supplement-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:10px;
+  margin-top:15px;
+}
+.supplement-item{
+  background:rgba(255,255,255,0.08);
+  padding:10px;
+  border-radius:8px;
+  text-align:left;
+}
+.supplement-item span{
+  display:block;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+.progress{
+  height:16px;
+  background:#333;
+  border-radius:8px;
+  margin-top:15px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#00ff88;
+  transition:0.4s;
+}
+.summary{
+  margin-top:20px;
+  text-align:left;
+}
+.quantity{
+  width:100%;
+}
+</style>
+</head>
+<body>
+
+<h1>💊 Testosterone Supplements Tracker</h1>
+<p>Select a day, choose number of pills, then save.</p>
+
+<div class="container">
+
+  <div class="controls">
+    <select id="daySelect">
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+
+    <button onclick="saveDay()">Save Day</button>
+    <button onclick="clearWeek()">Reset Week</button>
+  </div>
+
+  <div class="supplement-list" id="supplementList"></div>
+
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="dayScore" style="margin-top:10px;font-weight:bold;">
+    Day Support: 0%
+  </div>
+
+  <div class="summary">
+    <h3>📊 Weekly Summary</h3>
+    <p id="weeklyAverage">Average: 0%</p>
+    <p id="bestDay">Best Day: -</p>
+    <p id="worstDay">Worst Day: -</p>
+  </div>
+
+</div>
+
+<script>
+
+const supplements = [
+  { name:"🧪 Zinc", percent:90 },
+  { name:"💊 Vitamin D3", percent:85 },
+  { name:"🧬 Magnesium", percent:75 },
+  { name:"🧴 Omega-3", percent:70 },
+  { name:"🌿 Ashwagandha", percent:65 }
+];
+
+const multipliers = {
+  "none":0,
+  "low":0.5,
+  "medium":1,
+  "high":1.5
+};
+
+const maxScore = supplements.reduce((sum,s)=>sum+(s.percent*1.5),0);
+
+function renderSupplements(){
+  const container=document.getElementById("supplementList");
+  container.innerHTML="";
+  supplements.forEach((s,index)=>{
+    container.innerHTML+=`
+      <div class="supplement-item">
+        <span>${s.name} (${s.percent}%)</span>
+        <select class="quantity" onchange="updateDayScore()" id="supp-${index}">
+          <option value="none">لم آخد</option>
+          <option value="low">قليل (1-2 حبايات)</option>
+          <option value="medium">متوسط (3-4 حبايات)</option>
+          <option value="high">كثير (5+ حبايات)</option>
+        </select>
+      </div>
+    `;
+  });
+}
+
+function updateDayScore(){
+  let total=0;
+  supplements.forEach((s,index)=>{
+    const qty=document.getElementById(`supp-${index}`).value;
+    total+=s.percent*multipliers[qty];
+  });
+  let percent=Math.round((total/maxScore)*100);
+  document.getElementById("progressBar").style.width=percent+"%";
+  document.getElementById("dayScore").innerText="Day Support: "+percent+"%";
+}
+
+function saveDay(){
+  const day=document.getElementById("daySelect").value;
+  const percent=parseInt(document.getElementById("dayScore").innerText.replace(/\D/g,''));
+  let weekData=JSON.parse(localStorage.getItem("weekSuppData"))||{};
+  weekData[day]=percent;
+  localStorage.setItem("weekSuppData",JSON.stringify(weekData));
+  calculateWeekly();
+  alert("Saved ✔️");
+}
+
+function calculateWeekly(){
+  let weekData=JSON.parse(localStorage.getItem("weekSuppData"))||{};
+  let values=Object.values(weekData);
+  if(values.length===0){
+    document.getElementById("weeklyAverage").innerText="Average: 0%";
+    document.getElementById("bestDay").innerText="Best Day: -";
+    document.getElementById("worstDay").innerText="Worst Day: -";
+    return;
+  }
+
+  let avg=Math.round(values.reduce((a,b)=>a+b,0)/values.length);
+  document.getElementById("weeklyAverage").innerText="Average: "+avg+"%";
+
+  let bestDay=Object.keys(weekData).reduce((a,b)=>weekData[a]>weekData[b]?a:b);
+  let worstDay=Object.keys(weekData).reduce((a,b)=>weekData[a]<weekData[b]?a:b);
+
+  document.getElementById("bestDay").innerText="Best Day: "+bestDay+" ("+weekData[bestDay]+"%)";
+  document.getElementById("worstDay").innerText="Worst Day: "+worstDay+" ("+weekData[worstDay]+"%)";
+}
+
+function clearWeek(){
+  localStorage.removeItem("weekSuppData");
+  calculateWeekly();
+  alert("Week Reset ✔️");
+}
+
+renderSupplements();
+calculateWeekly();
+
+</script>
+
+</body>
+</html>

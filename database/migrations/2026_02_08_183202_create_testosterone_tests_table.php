@@ -6,28 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('daily_logs', function (Blueprint $table) {
+        Schema::create('testosterone_tests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->date('log_date');
-            $table->float('sleep_hours')->nullable();
+            $table->float('total_testosterone');
+            $table->float('free_testosterone')->nullable();
+            $table->date('date');
             $table->text('notes')->nullable();
             $table->timestamps();
-
-            $table->unique(['user_id', 'log_date']); // كل يوم مرة واحدة لكل يوزر
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('daily_logs');
+        Schema::dropIfExists('testosterone_tests');
     }
 };

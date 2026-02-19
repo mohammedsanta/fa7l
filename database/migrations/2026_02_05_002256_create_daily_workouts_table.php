@@ -13,10 +13,13 @@ return new class extends Migration
     {
 Schema::create('daily_workouts', function (Blueprint $table) {
     $table->id();
+    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
     $table->foreignId('daily_log_id')->constrained()->cascadeOnDelete();
     $table->foreignId('workout_id')->constrained()->cascadeOnDelete();
     $table->integer('duration_minutes')->nullable();
     $table->enum('intensity', ['low', 'medium', 'high'])->nullable();
+    $table->string('date');
+    $table->string('duration');
     $table->timestamps();
 });
 

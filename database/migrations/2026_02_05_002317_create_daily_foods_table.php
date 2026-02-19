@@ -13,9 +13,11 @@ return new class extends Migration
     {
 Schema::create('daily_foods', function (Blueprint $table) {
     $table->id();
+    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
     $table->foreignId('daily_log_id')->constrained()->cascadeOnDelete();
-    $table->foreignId('food_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('food_id')->references('id')->on('foods')->onDelete('cascade');
     $table->float('quantity')->nullable();
+    $table->string('date');
     $table->timestamps();
 });
 

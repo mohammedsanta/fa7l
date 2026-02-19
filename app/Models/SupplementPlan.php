@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class SupplementPlan extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'name',
+        'description',
+        'active'
+    ];
+
+    protected $casts = [
+        'active' => 'boolean'
+    ];
+}
