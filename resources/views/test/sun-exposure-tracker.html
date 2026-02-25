@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌞 Sun Exposure Tracker</title>
+
+<style>
+body{
+font-family:Arial;
+margin:0;
+padding:20px;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+}
+
+.container{
+max-width:700px;
+margin:auto;
+background:rgba(255,255,255,0.05);
+padding:25px;
+border-radius:15px;
+}
+
+input{
+padding:8px;
+margin:8px;
+border-radius:6px;
+border:none;
+}
+
+.checkbox-group{
+text-align:left;
+margin:15px 0;
+}
+
+.result{
+margin-top:20px;
+padding:15px;
+border-radius:10px;
+display:none;
+}
+
+.low{background:#ff4444;}
+.medium{background:#ff9800;}
+.high{background:#00ff88;color:black;}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
+}
+
+.analyze-btn{background:#ffcc00;}
+.save-btn{background:#00ff88;color:black;display:none;}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🌞 Sun Exposure Quality Tracker</h1>
+
+<label>⏰ Time of Exposure:</label><br>
+<input type="time" id="sunTime"><br>
+
+<label>⏳ Duration (minutes):</label><br>
+<input type="number" id="duration" placeholder="Minutes"><br>
+
+<div class="checkbox-group">
+<h3>☀ Body Parts Exposed:</h3>
+
+<label><input type="checkbox" value="hands" class="bodyPart"> Face + Hands</label><br>
+<label><input type="checkbox" value="forearms" class="bodyPart"> Face + Forearms</label><br>
+<label><input type="checkbox" value="upperbody" class="bodyPart"> Face + Upper Body</label><br>
+</div>
+
+<button class="analyze-btn" onclick="analyzeSun()">Analyze Exposure</button>
+
+<div id="resultBox" class="result"></div>
+
+<button id="saveBtn" class="save-btn" onclick="saveExposure()">Save Exposure</button>
+
+</div>
+
+<script>
+
+let lastResultData=null;
+
+function analyzeSun(){
+
+let time = document.getElementById("sunTime").value;
+let duration = parseInt(document.getElementById("duration").value)||0;
+let bodyParts = document.querySelectorAll(".bodyPart:checked");
+
+if(!time || duration<=0 || bodyParts.length===0){
+alert("Please fill all fields");
+return;
+}
+
+let hour = parseInt(time.split(":")[0]);
+let qualityScore=0;
+let warnings=[];
+
+/* ❗ وقت متأخر */
+if(hour>=18){
+warnings.push("❗ Sun time is too late — UVB almost ineffective.");
+}
+
+/* تقييم الوقت */
+if(hour>=11 && hour<=14){
+qualityScore+=50;
+}else if((hour>=9 && hour<11) || (hour>14 && hour<=16)){
+qualityScore+=30;
+}else{
+qualityScore+=15;
+}
+
+/* ⚠ مدة زائدة */
+if(duration>45){
+warnings.push("⚠ Overexposure risk — too much sun.");
+}
+
+/* تقييم المدة */
+if(duration>=20){
+qualityScore+=30;
+}else if(duration>=10){
+qualityScore+=20;
+}else{
+qualityScore+=10;
+}
+
+/* تقييم مساحة الجسم */
+bodyParts.forEach(part=>{
+if(part.value==="hands") qualityScore+=10;
+if(part.value==="forearms") qualityScore+=20;
+if(part.value==="upperbody") qualityScore+=30;
+});
+
+/* تحديد المستوى */
+let level="";
+let className="";
+
+/* 🔴 لو فيه تحذير خطير */
+if(warnings.length>0){
+level="Unsafe Exposure";
+className="low";
+}
+/* 🔴 لو الجودة ضعيفة */
+else if(qualityScore<40){
+level="Low Support";
+className="low";
+}
+/* 🟡 متوسط */
+else if(qualityScore<70){
+level="Moderate Exposure";
+className="medium";
+}
+/* 🟢 مثالي */
+else{
+level="Optimal Exposure";
+className="high";
+}
+
+/* عرض النتيجة */
+let resultBox=document.getElementById("resultBox");
+resultBox.style.display="block";
+resultBox.className="result "+className;
+
+let warningHTML="";
+if(warnings.length>0){
+warningHTML="<br><strong>"+warnings.join("<br>")+"</strong>";
+}
+
+resultBox.innerHTML=`
+<h3>${level}</h3>
+<p>Estimated Quality: ${qualityScore}%</p>
+${warningHTML}
+`;
+
+lastResultData={
+date:new Date().toLocaleDateString(),
+time,
+duration,
+parts:[...bodyParts].map(p=>p.value),
+score:qualityScore,
+level,
+warnings
+};
+
+document.getElementById("saveBtn").style.display="inline-block";
+}
+
+</script>
+
+</body>
+</html>

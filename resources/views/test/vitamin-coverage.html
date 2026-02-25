@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥗 Vitamin Coverage From Food</title>
+
+<style>
+body{
+font-family:Arial;
+margin:0;
+padding:20px;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+}
+
+.container{
+max-width:1000px;
+margin:auto;
+background:rgba(255,255,255,0.05);
+padding:20px;
+border-radius:15px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+border:1px solid rgba(255,255,255,0.2);
+padding:10px;
+text-align:center;
+}
+
+th{
+background:rgba(0,0,0,0.3);
+}
+
+.low{
+background:#ff4444;
+}
+
+.good{
+background:#00ff88;
+color:black;
+}
+
+.warning{
+background:#ff9800;
+color:black;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:8px;
+background:#00ff88;
+font-weight:bold;
+cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🥗 Vitamin Coverage From Your Food</h1>
+<p>System calculates vitamins from selected foods automatically</p>
+
+<button onclick="analyze()">Analyze Food</button>
+
+<table id="resultTable">
+<thead>
+<tr>
+<th>Vitamin</th>
+<th>Required</th>
+<th>Covered From Food</th>
+<th>Coverage %</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</div>
+
+<script>
+
+/*
+==============================
+📌 DEFINE VITAMIN REQUIREMENTS
+==============================
+*/
+
+const vitaminRequirements = {
+"Vitamin D":4000,
+"Vitamin B12":2.4,
+"Vitamin A":900,
+"Vitamin C":90,
+"Vitamin E":15,
+"Vitamin K":120,
+"Zinc":11,
+"Magnesium":400
+};
+
+/*
+====================================
+📌 FOOD DATA SHOULD COME FROM LOCALSTORAGE
+Example:
+weekFoodData = {
+ Monday: { "Eggs":2, "Oysters":1 }
+}
+====================================
+*/
+
+const foodNutritionDatabase = {
+
+"Eggs":{
+"Vitamin D":40,
+"Vitamin B12":0.5,
+"Zinc":0.2
+},
+
+"Oysters":{
+"Vitamin D":200,
+"Vitamin B12":2,
+"Zinc":15
+},
+
+"Beef":{
+"Vitamin B12":1,
+"Zinc":5,
+"Magnesium":20
+},
+
+"Spinach":{
+"Vitamin K":150,
+"Magnesium":30
+}
+
+};
+
+/*
+============================
+📊 ANALYSIS FUNCTION
+============================
+*/
+
+function analyze(){
+
+let weekData = JSON.parse(localStorage.getItem("weekFoodData")) || {};
+let today = Object.values(weekData)[0] || {}; 
+// نحلل اول يوم محفوظ كمثال
+
+let vitaminTotals = {};
+
+for(let food in today){
+
+let quantity = today[food];
+let nutrition = foodNutritionDatabase[food];
+
+if(!nutrition) continue;
+
+for(let vitamin in nutrition){
+let amount = nutrition[vitamin] * quantity;
+
+if(!vitaminTotals[vitamin]){
+vitaminTotals[vitamin]=0;
+}
+
+vitaminTotals[vitamin]+=amount;
+}
+
+}
+
+/*
+============================
+📊 BUILD TABLE
+============================
+*/
+
+let tbody = document.querySelector("#resultTable tbody");
+tbody.innerHTML="";
+
+for(let vitamin in vitaminRequirements){
+
+let required = vitaminRequirements[vitamin];
+let covered = vitaminTotals[vitamin] || 0;
+let percent = Math.round((covered/required)*100);
+
+let statusClass="low";
+let statusText="Low ⚠";
+
+if(percent>=70){
+statusClass="good";
+statusText="Good ✅";
+}else if(percent>=40){
+statusClass="warning";
+statusText="Partial 🟡";
+}
+
+tbody.innerHTML+=`
+<tr class="${statusClass}">
+<td>${vitamin}</td>
+<td>${required}</td>
+<td>${covered.toFixed(2)}</td>
+<td>${percent}%</td>
+<td>${statusText}</td>
+</tr>
+`;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register Pro</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a52,#2c5364);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+color:white;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(20px);
+padding:40px;
+border-radius:25px;
+width:400px;
+box-shadow:0 20px 60px rgba(0,0,0,0.6);
+animation:fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+h2{
+text-align:center;
+margin-bottom:25px;
+}
+
+.input-group{
+position:relative;
+margin-bottom:15px;
+}
+
+.input-group i{
+position:absolute;
+left:12px;
+top:50%;
+transform:translateY(-50%);
+color:#00e5ff;
+}
+
+.input-group input{
+width:100%;
+padding:12px 45px;
+border-radius:12px;
+border:none;
+outline:none;
+font-size:14px;
+background:rgba(255,255,255,0.15);
+color:white;
+}
+
+.error{
+color:#ff4d4d;
+font-size:13px;
+margin-top:-8px;
+margin-bottom:10px;
+display:none;
+}
+
+/* PASSWORD STRENGTH */
+
+.strength-bar{
+height:6px;
+width:100%;
+background:#333;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:10px;
+}
+
+.strength{
+height:100%;
+width:0%;
+background:red;
+transition:0.3s;
+}
+
+/* BUTTON */
+
+button{
+width:100%;
+padding:14px;
+background:#00e5ff;
+border:none;
+border-radius:12px;
+font-weight:bold;
+cursor:pointer;
+font-size:15px;
+transition:0.3s;
+position:relative;
+}
+
+button:hover{
+background:#00bcd4;
+transform:scale(1.03);
+}
+
+/* LOADING SPINNER */
+
+.spinner{
+display:none;
+width:18px;
+height:18px;
+border:3px solid white;
+border-top:3px solid transparent;
+border-radius:50%;
+animation:spin 0.8s linear infinite;
+margin:auto;
+}
+
+@keyframes spin{
+from{transform:rotate(0deg);}
+to{transform:rotate(360deg);}
+}
+
+.link{
+text-align:center;
+margin-top:15px;
+font-size:14px;
+}
+
+.link a{
+color:#ff9800;
+text-decoration:none;
+font-weight:bold;
+}
+
+</style>
+</head>
+<body>
+
+<div class="card">
+
+<h2>🧬 Create Account</h2>
+
+<div class="input-group">
+<i class="fa fa-user"></i>
+<input type="text" id="name" placeholder="Full Name">
+</div>
+<div class="error" id="nameError">Name is required</div>
+
+<div class="input-group">
+<i class="fa fa-envelope"></i>
+<input type="email" id="email" placeholder="Email">
+</div>
+<div class="error" id="emailError">Valid email required</div>
+
+<div class="input-group">
+<i class="fa fa-lock"></i>
+<input type="password" id="password" placeholder="Password" onkeyup="checkStrength()">
+</div>
+
+<div class="strength-bar">
+<div class="strength" id="strengthBar"></div>
+</div>
+
+<div class="error" id="passError">Password too weak</div>
+
+<div class="input-group">
+<i class="fa fa-lock"></i>
+<input type="password" id="confirm" placeholder="Confirm Password">
+</div>
+<div class="error" id="confirmError">Passwords do not match</div>
+
+<button onclick="register()">
+<span id="btnText">Register</span>
+<div class="spinner" id="spinner"></div>
+</button>
+
+<div class="link">
+Already have account? <a href="login.html">Login</a>
+</div>
+
+</div>
+
+<script>
+
+/* ===== VALIDATION ===== */
+
+function validate(){
+let valid = true;
+
+let name = document.getElementById("name").value.trim();
+let email = document.getElementById("email").value.trim();
+let pass = document.getElementById("password").value;
+let confirm = document.getElementById("confirm").value;
+
+document.getElementById("nameError").style.display = name ? "none":"block";
+
+let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+document.getElementById("emailError").style.display = emailRegex.test(email) ? "none":"block";
+
+document.getElementById("passError").style.display = pass.length >=6 ? "none":"block";
+
+document.getElementById("confirmError").style.display = (pass === confirm && confirm.length>0) ? "none":"block";
+
+if(!name || !emailRegex.test(email) || pass.length<6 || pass!==confirm){
+valid = false;
+}
+
+return valid;
+}
+
+/* ===== PASSWORD STRENGTH ===== */
+
+function checkStrength(){
+let pass = document.getElementById("password").value;
+let bar = document.getElementById("strengthBar");
+
+let strength = 0;
+if(pass.length >=6) strength += 25;
+if(pass.match(/[A-Z]/)) strength += 25;
+if(pass.match(/[0-9]/)) strength += 25;
+if(pass.match(/[^A-Za-z0-9]/)) strength += 25;
+
+bar.style.width = strength + "%";
+
+if(strength <50) bar.style.background="red";
+else if(strength <75) bar.style.background="orange";
+else bar.style.background="#00ff88";
+}
+
+/* ===== REGISTER ===== */
+
+function register(){
+
+if(!validate()) return;
+
+document.getElementById("btnText").style.display="none";
+document.getElementById("spinner").style.display="block";
+
+setTimeout(()=>{
+alert("Registration Successful 🚀");
+document.getElementById("btnText").style.display="block";
+document.getElementById("spinner").style.display="none";
+},2000);
+
+}
+
+</script>
+
+</body>
+</html>

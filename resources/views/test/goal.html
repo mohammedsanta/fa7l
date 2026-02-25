@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 Goal Based Nutrition Selector</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  text-align:center;
+}
+
+.container{
+  max-width:700px;
+  margin:auto;
+  background:rgba(255,255,255,0.05);
+  padding:25px;
+  border-radius:15px;
+}
+
+h1{margin-bottom:10px;}
+
+.goal-box{
+  background:rgba(255,255,255,0.08);
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.goal-box:hover{
+  background:#00ff88;
+  color:#000;
+}
+
+.goal-box input{
+  margin-right:10px;
+  transform:scale(1.2);
+}
+
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  background:#ff9800;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.result{
+  margin-top:20px;
+  padding:15px;
+  background:rgba(0,0,0,0.3);
+  border-radius:10px;
+  display:none;
+  text-align:left;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>🎯 Choose Your Nutrition Goal</h1>
+<p>Select your main focus to generate a customized food plan</p>
+
+<div class="goal-box">
+<input type="radio" name="goal" value="beard">
+🔥 Beard Growth Nutrition
+</div>
+
+<div class="goal-box">
+<input type="radio" name="goal" value="testosterone">
+🚀 Boost Testosterone
+</div>
+
+<div class="goal-box">
+<input type="radio" name="goal" value="height">
+📏 Focus on Height / Growth Support
+</div>
+
+<div class="goal-box">
+<input type="radio" name="goal" value="balanced">
+⚖️ Balanced Healthy Diet
+</div>
+
+<button onclick="generatePlan()">Generate Plan</button>
+
+<div class="result" id="resultBox"></div>
+
+</div>
+
+<script>
+
+function generatePlan(){
+
+let selected=document.querySelector('input[name="goal"]:checked');
+if(!selected){
+alert("Please select a goal first!");
+return;
+}
+
+let goal=selected.value;
+let resultBox=document.getElementById("resultBox");
+resultBox.style.display="block";
+
+let plan="";
+
+if(goal==="beard"){
+plan=`
+<h3>🌿 Beard Growth Food Plan</h3>
+<ul>
+<li>🥚 Eggs (Biotin + Protein)</li>
+<li>🦪 Oysters (Zinc Support)</li>
+<li>🥩 Red Meat (Iron + Testosterone Support)</li>
+<li>🥑 Avocado (Healthy Fats)</li>
+<li>🌰 Nuts (Healthy Hormone Support)</li>
+</ul>
+<p>✔ Focus on Zinc, Protein & Healthy Fats daily.</p>
+`;
+}
+
+if(goal==="testosterone"){
+plan=`
+<h3>🚀 Testosterone Boost Plan</h3>
+<ul>
+<li>🦪 Oysters</li>
+<li>🥚 Eggs</li>
+<li>🐟 Fatty Fish</li>
+<li>🥩 Lean Beef</li>
+<li>🌿 Ginger & Garlic</li>
+</ul>
+<p>✔ Focus on Zinc + Vitamin D + Healthy Fats.</p>
+`;
+}
+
+if(goal==="height"){
+plan=`
+<h3>📏 Growth / Height Support Plan</h3>
+<ul>
+<li>🥛 Milk / Dairy</li>
+<li>🍗 Protein Sources</li>
+<li>🥚 Eggs</li>
+<li>🐟 Fish</li>
+<li>🌞 Sun Exposure (Vitamin D)</li>
+</ul>
+<p>✔ Focus on Calcium + Protein + Sleep.</p>
+`;
+}
+
+if(goal==="balanced"){
+plan=`
+<h3>⚖️ Balanced Nutrition Plan</h3>
+<ul>
+<li>🥗 Vegetables</li>
+<li>🍗 Protein</li>
+<li>🍉 Fruits</li>
+<li>🥑 Healthy Fats</li>
+<li>💧 Water</li>
+</ul>
+<p>✔ Maintain Hormonal & Metabolic Balance.</p>
+`;
+}
+
+resultBox.innerHTML=plan;
+
+}
+
+</script>
+
+</body>
+</html>

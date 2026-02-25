@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍽 Meal Time Tracker</title>
+
+<style>
+body{
+font-family:Arial;
+margin:0;
+padding:20px;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+}
+
+.container{
+max-width:800px;
+margin:auto;
+background:rgba(255,255,255,0.05);
+padding:25px;
+border-radius:15px;
+}
+
+select,input,button{
+padding:8px;
+margin:8px;
+border-radius:6px;
+border:none;
+font-weight:bold;
+}
+
+button{
+background:#00ff88;
+cursor:pointer;
+color:black;
+}
+
+.warning{
+background:#ff4444;
+padding:10px;
+border-radius:8px;
+margin-top:10px;
+display:none;
+}
+
+.good{
+background:#00ff88;
+color:black;
+padding:10px;
+border-radius:8px;
+margin-top:10px;
+display:none;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🍽 Meal Time Tracker</h1>
+<p>Select meal + time to analyze eating timing</p>
+
+<!-- اختيار اليوم -->
+<select id="daySelect">
+<option value="Monday">Monday</option>
+<option value="Tuesday">Tuesday</option>
+<option value="Wednesday">Wednesday</option>
+<option value="Thursday">Thursday</option>
+<option value="Friday">Friday</option>
+<option value="Saturday">Saturday</option>
+<option value="Sunday">Sunday</option>
+</select>
+
+<!-- اختيار الوجبة -->
+<select id="mealSelect">
+<option value="Breakfast">🥞 Breakfast</option>
+<option value="Lunch">🍗 Lunch</option>
+<option value="Dinner">🌙 Dinner</option>
+<option value="Snack">🍎 Snack</option>
+</select>
+
+<!-- وقت الوجبة -->
+<input type="time" id="mealTime">
+
+<button onclick="analyzeMeal()">Analyze Meal Time</button>
+<button onclick="saveMeal()">Save Meal</button>
+
+<div id="resultBox" class="warning"></div>
+
+<h3>📊 Weekly Summary</h3>
+<div id="weekSummary"></div>
+
+</div>
+
+<script>
+
+let lastMealData=null;
+
+function analyzeMeal(){
+
+let time=document.getElementById("mealTime").value;
+if(!time){
+alert("Please select meal time");
+return;
+}
+
+let hour=parseInt(time.split(":")[0]);
+let resultBox=document.getElementById("resultBox");
+resultBox.style.display="block";
+
+/* تحديد أفضل الأوقات */
+let suggestion="";
+
+if(document.getElementById("mealSelect").value==="Breakfast"){
+suggestion="🥞 Best breakfast time: Between 6:00 AM - 9:00 AM";
+}
+
+if(document.getElementById("mealSelect").value==="Lunch"){
+suggestion="🍗 Best lunch time: Between 12:00 PM - 3:00 PM";
+}
+
+if(document.getElementById("mealSelect").value==="Dinner"){
+suggestion="🌙 Best dinner time: Before 9:00 PM (Preferably 6PM - 8PM)";
+}
+
+/* تحذير لو الوقت متأخر */
+let warning="";
+
+if(hour>=22){
+warning="⚠ Eating very late harms digestion & hormones!";
+resultBox.className="warning";
+}
+else if(hour>=23){
+warning="🚫 Too Late! Not Healthy.";
+resultBox.className="warning";
+}
+else{
+resultBox.className="good";
+}
+
+resultBox.innerHTML=`
+<h3>Analysis Result</h3>
+<p>${suggestion}</p>
+<p>${warning}</p>
+`;
+
+lastMealData={
+date:new Date().toLocaleDateString(),
+day:document.getElementById("daySelect").value,
+meal:document.getElementById("mealSelect").value,
+time
+};
+
+}
+
+function saveMeal(){
+
+if(!lastMealData){
+alert("Analyze first before saving!");
+return;
+}
+
+let data=JSON.parse(localStorage.getItem("mealTimeData"))||{};
+let key=lastMealData.date;
+
+if(!data[key]) data[key]=[];
+
+data[key].push(lastMealData);
+
+localStorage.setItem("mealTimeData",JSON.stringify(data));
+
+alert("Meal Saved ✔");
+loadWeek();
+}
+
+function loadWeek(){
+
+let data=JSON.parse(localStorage.getItem("mealTimeData"))||{};
+let summary=document.getElementById("weekSummary");
+summary.innerHTML="";
+
+Object.keys(data).forEach(date=>{
+summary.innerHTML+=`
+<div style="background:rgba(255,255,255,0.1);padding:10px;border-radius:8px;margin:5px;">
+<strong>${date}</strong><br>
+${data[date].map(m=>`🍽 ${m.meal} - ${m.time}`).join("<br>")}
+</div>
+`;
+});
+
+}
+
+/* أفضل أوقات الفطار والغداء والعشاء */
+function showBestTimes(){
+
+alert(`
+🥞 Breakfast: 6AM - 9AM
+🍗 Lunch: 12PM - 3PM
+🌙 Dinner: Before 9PM (Better before 8PM)
+`);
+}
+
+loadWeek();
+
+</script>
+
+</body>
+</html>

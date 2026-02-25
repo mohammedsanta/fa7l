@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Injury Recovery Guide</title>
+
+<style>
+body{
+margin:0;
+padding:20px;
+font-family:Arial;
+background:linear-gradient(135deg,#1c1c1c,#2c3e50);
+color:white;
+text-align:center;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:rgba(255,255,255,0.05);
+padding:25px;
+border-radius:15px;
+}
+
+select,button{
+padding:10px;
+margin:10px;
+border-radius:8px;
+border:none;
+font-weight:bold;
+}
+
+button{
+background:#ff9800;
+color:black;
+cursor:pointer;
+}
+
+.result{
+margin-top:20px;
+padding:20px;
+border-radius:12px;
+background:rgba(0,0,0,0.4);
+display:none;
+text-align:left;
+}
+
+.section{
+margin-bottom:15px;
+padding:12px;
+background:rgba(255,255,255,0.08);
+border-radius:8px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🏥 Muscle Injury & Recovery Guide</h1>
+
+<select id="injurySelect">
+<option value="">-- Select Injury --</option>
+<option value="muscle_strain">Muscle Strain</option>
+<option value="joint_pain">Joint Pain</option>
+<option value="knee_pain">Knee Pain</option>
+<option value="shoulder_pain">Shoulder Pain</option>
+<option value="lower_back">Lower Back Pain</option>
+<option value="cramps">Muscle Cramps</option>
+<option value="tendonitis">Tendonitis</option>
+</select>
+
+<br>
+
+<button onclick="showInjury()">Show Recovery Plan</button>
+
+<div id="resultBox" class="result"></div>
+
+</div>
+
+<script>
+
+const injuryData = {
+
+muscle_strain:{
+causes:[
+"Poor warm-up",
+"Heavy weights",
+"Overtraining",
+"Low protein intake"
+],
+solution:[
+"Rest 3–7 days",
+"Ice 15–20 mins every 2–3 hours",
+"Light stretching after pain reduces",
+"Gradual return to training"
+],
+nutrition:[
+"Protein",
+"Magnesium",
+"Vitamin C",
+"Collagen"
+]
+},
+
+joint_pain:{
+causes:[
+"Collagen deficiency",
+"Vitamin D deficiency",
+"Heavy repetitive movements",
+"Bad form"
+],
+solution:[
+"Reduce load",
+"Focus on mobility",
+"Use joint-support exercises",
+"Check training form"
+],
+nutrition:[
+"Collagen",
+"Vitamin D",
+"Omega-3",
+"Zinc"
+]
+},
+
+knee_pain:{
+causes:[
+"Wrong squat form",
+"Weak glutes",
+"Tight hamstrings",
+"Heavy leg training"
+],
+solution:[
+"Stop heavy squats",
+"Strengthen glutes",
+"Stretch hamstrings",
+"Use knee support if needed"
+],
+nutrition:[
+"Collagen",
+"Magnesium",
+"Vitamin D"
+]
+},
+
+shoulder_pain:{
+causes:[
+"Bad bench press form",
+"Weak rotator cuff",
+"Overhead overload"
+],
+solution:[
+"Stop overhead pressing",
+"Do rotator cuff exercises",
+"Use light resistance band"
+],
+nutrition:[
+"Collagen",
+"Omega-3",
+"Protein"
+]
+},
+
+lower_back:{
+causes:[
+"Deadlift wrong form",
+"Weak core",
+"Tight hamstrings"
+],
+solution:[
+"Core strengthening",
+"Fix deadlift form",
+"Stretch hamstrings"
+],
+nutrition:[
+"Magnesium",
+"Protein",
+"Vitamin D"
+]
+},
+
+cramps:{
+causes:[
+"Magnesium deficiency",
+"Dehydration",
+"Low potassium",
+"Overtraining"
+],
+solution:[
+"Hydrate immediately",
+"Stretch muscle slowly",
+"Massage area"
+],
+nutrition:[
+"Magnesium",
+"Potassium",
+"Electrolytes"
+]
+},
+
+tendonitis:{
+causes:[
+"Overuse",
+"Repetitive movement",
+"Inflammation",
+"Low collagen intake"
+],
+solution:[
+"Rest affected area",
+"Ice therapy",
+"Slow rehab exercises"
+],
+nutrition:[
+"Collagen",
+"Vitamin C",
+"Omega-3"
+]
+}
+
+};
+
+function showInjury(){
+
+let injury=document.getElementById("injurySelect").value;
+let resultBox=document.getElementById("resultBox");
+
+if(!injury){
+alert("Please select injury");
+return;
+}
+
+let data=injuryData[injury];
+
+resultBox.style.display="block";
+
+resultBox.innerHTML=`
+<h2>Recovery Plan</h2>
+
+<div class="section">
+<h3>⚠ Possible Causes</h3>
+<ul>${data.causes.map(c=>`<li>${c}</li>`).join("")}</ul>
+</div>
+
+<div class="section">
+<h3>🛠 What To Do</h3>
+<ul>${data.solution.map(s=>`<li>${s}</li>`).join("")}</ul>
+</div>
+
+<div class="section">
+<h3>🥗 Important Nutrients</h3>
+<ul>${data.nutrition.map(n=>`<li>${n}</li>`).join("")}</ul>
+</div>
+
+<div class="section">
+<strong>🚨 If pain lasts more than 10 days, consult a doctor.</strong>
+</div>
+`;
+
+}
+
+</script>
+
+</body>
+</html>

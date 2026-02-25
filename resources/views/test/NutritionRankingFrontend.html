@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nutrition Finder</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body class="bg-light">
+<div id="app" class="container py-4">
+
+    <h2 class="mb-4 text-center">🥗 Nutrition Smart Finder (Static Data)</h2>
+
+    <div class="card p-4 mb-4 shadow">
+        <h5>Select What You Want To Find 🔎</h5>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <label class="form-label">Choose Category</label>
+                <select class="form-select" v-model="selectedType">
+                    <option disabled value="">-- Select --</option>
+                    <option value="protein">Highest Protein</option>
+                    <option value="vitamins">Highest Vitamins</option>
+                    <option value="minerals">Highest Minerals</option>
+                </select>
+            </div>
+
+            <div class="col-md-6" v-if="selectedType">
+                <label class="form-label">Sort By</label>
+                <select class="form-select" v-model="sortKey">
+                    <option v-for="col in availableColumns" :key="col" :value="col">
+                        {{ col }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-primary" @click="loadData">Show Results</button>
+        </div>
+    </div>
+
+    <div v-if="foods.length" class="card shadow p-3">
+        <div class="mb-3">
+            <input type="text" class="form-control" v-model="search" placeholder="Search food name...">
+        </div>
+
+        <div class="table-responsive" style="max-height:75vh; overflow:auto;">
+            <table class="table table-bordered table-hover table-sm">
+                <thead class="table-dark" style="position:sticky; top:0;">
+                    <tr>
+                        <th>Food</th>
+                        <th>{{ sortKey }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="food in filteredFoods" :key="food.id">
+                        <td>{{ food.description }}</td>
+                        <td class="fw-bold text-success">{{ food[sortKey] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+    data() {
+        return {
+            selectedType: '',
+            sortKey: '',
+            search: '',
+            foods: [],
+
+            staticData: [
+                { id:1, description:'Milk', protein:1.03, vitamin_a_rae:61, vitamin_b12:0.05, vitamin_b6:0.01, vitamin_c:0, vitamin_e:0.08, vitamin_k:0.3, iron:0.03, calcium:32, magnesium:3, zinc:0.17, selenium:1.8 },
+                { id:2, description:'Egg', protein:13, vitamin_a_rae:160, vitamin_b12:1.1, vitamin_b6:0.2, vitamin_c:0, vitamin_e:1.2, vitamin_k:0.5, iron:1.8, calcium:56, magnesium:12, zinc:1.3, selenium:30 },
+                { id:3, description:'Beef', protein:26, vitamin_a_rae:15, vitamin_b12:2.5, vitamin_b6:0.4, vitamin_c:0, vitamin_e:0.5, vitamin_k:0.2, iron:2.6, calcium:18, magnesium:21, zinc:4.5, selenium:28 },
+                { id:4, description:'Spinach', protein:2.9, vitamin_a_rae:469, vitamin_b12:0, vitamin_b6:0.2, vitamin_c:28, vitamin_e:2, vitamin_k:482, iron:2.7, calcium:99, magnesium:79, zinc:0.5, selenium:1 }
+            ]
+        }
+    },
+
+    computed: {
+        availableColumns() {
+            if (this.selectedType === 'protein') return ['protein'];
+            if (this.selectedType === 'vitamins') return ['vitamin_a_rae','vitamin_b12','vitamin_b6','vitamin_c','vitamin_e','vitamin_k'];
+            if (this.selectedType === 'minerals') return ['iron','calcium','magnesium','zinc','selenium'];
+            return [];
+        },
+        filteredFoods() {
+            return this.foods
+                .filter(f => !this.search || f.description.toLowerCase().includes(this.search.toLowerCase()))
+                .sort((a,b) => b[this.sortKey] - a[this.sortKey]);
+        }
+    },
+
+    methods: {
+        loadData() {
+            if(!this.sortKey) return;
+            this.foods = this.staticData;
+        }
+    }
+}).mount('#app');
+</script>
+
+</body>
+</html>

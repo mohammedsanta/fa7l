@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete Athlete Advanced Registration</title>
+
+<style>
+
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+padding:20px;
+}
+
+.container{
+max-width:1250px;
+margin:auto;
+background:rgba(255,255,255,0.06);
+padding:40px;
+border-radius:25px;
+box-shadow:0 15px 50px rgba(0,0,0,0.5);
+}
+
+h1{
+text-align:center;
+margin-bottom:40px;
+}
+
+/* Sections */
+
+.section{
+margin-bottom:35px;
+padding:25px;
+background:rgba(255,255,255,0.08);
+border-radius:20px;
+}
+
+.section h2{
+margin-top:0;
+color:#00e5ff;
+}
+
+/* Inputs */
+
+input,select,textarea{
+width:100%;
+padding:12px;
+margin-top:8px;
+margin-bottom:15px;
+border-radius:10px;
+border:none;
+font-size:14px;
+}
+
+textarea{
+height:180px;
+resize:none;
+}
+
+/* Goals Grid */
+
+.goals-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:15px;
+margin-top:15px;
+}
+
+.goal-card{
+padding:18px;
+border-radius:15px;
+background:rgba(255,255,255,0.08);
+cursor:pointer;
+text-align:center;
+font-weight:600;
+transition:0.3s;
+border:2px solid transparent;
+}
+
+.goal-card:hover{
+transform:translateY(-4px);
+background:rgba(255,255,255,0.15);
+}
+
+.goal-card.selected{
+border:2px solid #00e5ff;
+background:rgba(0,229,255,0.25);
+}
+
+/* Buttons */
+
+button{
+width:100%;
+padding:16px;
+background:#ff9800;
+border:none;
+border-radius:15px;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#ffa733;
+}
+
+.checkbox-group{
+display:flex;
+flex-wrap:wrap;
+gap:15px;
+}
+
+.checkbox-group label{
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🏆 Complete Athlete Advanced Registration</h1>
+
+<!-- ================= PERSONAL ================= -->
+
+<div class="section">
+<h2>👤 1️⃣ Personal Information</h2>
+
+<input type="text" placeholder="Full Name">
+<input type="number" placeholder="Age">
+<input type="text" placeholder="Country / City">
+<input type="number" placeholder="Height (cm)">
+<input type="number" placeholder="Weight (kg)">
+<input type="number" placeholder="Body Fat %">
+<input type="number" placeholder="Waist Circumference (cm)">
+<input type="number" placeholder="Arm Circumference (cm)">
+
+<label>Upload Body Photo (Optional)</label>
+<input type="file">
+
+<select>
+<option>Job Type</option>
+<option>Physical Work</option>
+<option>Office Work</option>
+<option>Student</option>
+<option>Other</option>
+</select>
+
+</div>
+
+<!-- ================= GOALS ================= -->
+
+<div class="section">
+<h2>🎯 2️⃣ Goals (Choose Priority – Max 5)</h2>
+
+<div class="goals-grid" id="goals">
+
+<div class="goal-card">Increase Muscle</div>
+<div class="goal-card">Cut Fat</div>
+<div class="goal-card">Body Recomposition</div>
+<div class="goal-card">Maximize Testosterone</div>
+<div class="goal-card">Improve Energy</div>
+<div class="goal-card">Improve Sleep</div>
+<div class="goal-card">Beard Growth</div>
+<div class="goal-card">Increase Height</div>
+<div class="goal-card">Improve Cardio</div>
+<div class="goal-card">Reduce Stress</div>
+<div class="goal-card">Improve Sexual Performance</div>
+<div class="goal-card">Reduce Injuries</div>
+<div class="goal-card">Enter Competition</div>
+<div class="goal-card">Improve Body Aesthetics</div>
+<div class="goal-card">Build Strong Body</div>
+<div class="goal-card">Increase Strength (Squat / Bench / Deadlift)</div>
+
+</div>
+
+</div>
+
+<!-- ================= TRAINING ================= -->
+
+<div class="section">
+<h2>🏋 3️⃣ Training System</h2>
+
+<input type="text" placeholder="Training Program Type">
+<input type="number" placeholder="Training Days Per Week">
+<input type="number" placeholder="Session Duration (Minutes)">
+
+<select>
+<option>Cardio Frequency</option>
+<option>0</option>
+<option>1-2 Times</option>
+<option>3-4 Times</option>
+<option>Daily</option>
+</select>
+
+<select>
+<option>Compound Exercises?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Do You Track Progressive Overload?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Do You Track Your Weights?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Train With Coach?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Train Alone or Gym?</option>
+<option>Home</option>
+<option>Gym</option>
+</select>
+
+</div>
+
+<!-- ================= EXPERIENCE ================= -->
+
+<div class="section">
+<h2>🧠 4️⃣ Experience Level</h2>
+
+<select>
+<option>Select Level</option>
+<option>Beginner</option>
+<option>Intermediate</option>
+<option>Advanced</option>
+<option>Elite</option>
+</select>
+
+<select>
+<option>Do You Understand Nutrition?</option>
+<option>Yes</option>
+<option>Average</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Do You Understand Training Mechanics?</option>
+<option>Yes</option>
+<option>Average</option>
+<option>No</option>
+</select>
+
+</div>
+
+<!-- ================= NUTRITION ================= -->
+
+<div class="section">
+<h2>🥗 5️⃣ Nutrition</h2>
+
+<select>
+<option>Following Diet?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<input type="text" placeholder="Diet Type">
+
+<input type="number" placeholder="Meals Per Day">
+
+<select>
+<option>Sugar Consumption</option>
+<option>Rare</option>
+<option>Sometimes</option>
+<option>Often</option>
+</select>
+
+<select>
+<option>Oil Consumption</option>
+<option>Rare</option>
+<option>Sometimes</option>
+<option>Often</option>
+</select>
+
+<select>
+<option>Eat Outside?</option>
+<option>Rare</option>
+<option>Sometimes</option>
+<option>Often</option>
+</select>
+
+<select>
+<option>Track Calories?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Track Protein?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<h3>Supplements</h3>
+
+<div class="checkbox-group">
+<label><input type="checkbox"> Whey</label>
+<label><input type="checkbox"> Creatine</label>
+<label><input type="checkbox"> Omega 3</label>
+<label><input type="checkbox"> Zinc</label>
+<label><input type="checkbox"> Magnesium</label>
+<label><input type="checkbox"> Vitamin D</label>
+<label><input type="checkbox"> Collagen</label>
+</div>
+
+</div>
+
+<!-- ================= SLEEP ================= -->
+
+<div class="section">
+<h2>😴 6️⃣ Sleep & Recovery</h2>
+
+<input type="number" placeholder="Hours of Sleep">
+<select>
+<option>Sleep Quality</option>
+<option>Bad</option>
+<option>Average</option>
+<option>Good</option>
+</select>
+
+<select>
+<option>Interrupted Sleep?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Naps?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<input type="number" placeholder="Stress Level (1-10)">
+<input type="number" placeholder="Coffee Per Day">
+<input type="number" placeholder="Water Liters Per Day">
+
+</div>
+
+<!-- ================= HORMONES ================= -->
+
+<div class="section">
+<h2>🧬 7️⃣ Hormonal Indicators</h2>
+
+<select>
+<option>Daily Energy</option>
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+<select>
+<option>Morning Indicator (Erection Frequency)</option>
+<option>0-1 Days</option>
+<option>2-3 Days</option>
+<option>4-5 Days</option>
+<option>6-7 Days</option>
+</select>
+
+<select>
+<option>General Desire</option>
+<option>Low</option>
+<option>Normal</option>
+<option>High</option>
+</select>
+
+<select>
+<option>Cold Hands/Feet?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Constant Fatigue?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Abdominal Fat Accumulation?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+</div>
+
+<!-- ================= INJURIES ================= -->
+
+<div class="section">
+<h2>🏥 8️⃣ Injuries</h2>
+
+<select>
+<option>Past Injuries?</option>
+<option>No</option>
+<option>Yes</option>
+</select>
+
+<select>
+<option>Current Injuries?</option>
+<option>No</option>
+<option>Yes</option>
+</select>
+
+<input type="text" placeholder="Injury Location">
+<input type="number" placeholder="How Long Ago? (Months)">
+<input type="number" placeholder="Pain Level (1-10)">
+<select>
+<option>Did You Treat It?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+<select>
+<option>Returned to Training Early?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+</div>
+
+<!-- ================= DISCIPLINE ================= -->
+
+<div class="section">
+<h2>💪 9️⃣ Discipline</h2>
+
+<select>
+<option>Do You Feel Lazy?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Skip Workouts?</option>
+<option>Rare</option>
+<option>Sometimes</option>
+<option>Often</option>
+</select>
+
+<select>
+<option>Train Even When Not Motivated?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<input type="number" placeholder="Commitment Level (1-10)">
+
+</div>
+
+<!-- ================= PROGRESS ================= -->
+
+<div class="section">
+<h2>📊 🔟 Progress Analysis</h2>
+
+<select>
+<option>Weight Increased Last 3 Months?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Lost Fat?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<select>
+<option>Stuck Progress?</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+
+<input type="text" placeholder="How Long Without Progress?">
+
+</div>
+
+<!-- ================= NOTE ================= -->
+
+<div class="section">
+<h2>📝 11️⃣ Big Note</h2>
+
+<textarea placeholder="Write everything about your goals, fears, weaknesses, expectations, problems, and anything important..."></textarea>
+
+</div>
+
+<button>🚀 Save & Generate Smart Profile</button>
+
+</div>
+
+<script>
+
+/* Goals Selection Logic */
+let goals = document.querySelectorAll(".goal-card");
+let selected = [];
+
+goals.forEach(goal=>{
+goal.addEventListener("click",function(){
+
+if(this.classList.contains("selected")){
+this.classList.remove("selected");
+selected = selected.filter(item=>item!==this);
+}else{
+if(selected.length < 5){
+this.classList.add("selected");
+selected.push(this);
+}
+}
+
+});
+});
+
+</script>
+
+</body>
+</html>

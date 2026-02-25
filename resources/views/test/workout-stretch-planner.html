@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout System Stretch Planner</title>
+
+<style>
+body{
+margin:0;
+padding:20px;
+font-family:Arial;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+text-align:center;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:rgba(255,255,255,0.05);
+padding:25px;
+border-radius:15px;
+}
+
+select,button{
+padding:10px;
+margin:10px;
+border-radius:8px;
+border:none;
+font-weight:bold;
+}
+
+button{
+background:#00ff88;
+color:black;
+cursor:pointer;
+}
+
+.result{
+margin-top:20px;
+padding:20px;
+border-radius:12px;
+background:rgba(0,0,0,0.3);
+display:none;
+text-align:left;
+}
+
+.stretch-item{
+margin-bottom:12px;
+padding:10px;
+background:rgba(255,255,255,0.08);
+border-radius:8px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🏋️ Training System Stretch Planner</h1>
+
+<!-- اختيار النظام -->
+<select id="systemSelect" onchange="loadDays()">
+<option value="">-- Select Training System --</option>
+<option value="ppl">Push Pull Legs</option>
+<option value="upperlower">Upper / Lower</option>
+<option value="brosplit">Bro Split</option>
+<option value="anteriorposterior">Anterior / Posterior</option>
+<option value="fullbody">Full Body</option>
+</select>
+
+<br>
+
+<!-- اختيار اليوم (يتغير حسب النظام) -->
+<select id="daySelect" style="display:none;"></select>
+
+<br>
+
+<button onclick="showStretch()">Show Pre-Workout Stretches</button>
+
+<div id="resultBox" class="result"></div>
+
+</div>
+
+<script>
+
+const systems = {
+
+ppl: ["Push Day","Pull Day","Leg Day"],
+
+upperlower: ["Upper Day","Lower Day"],
+
+brosplit: ["Chest Day","Back Day","Leg Day","Shoulders Day","Arms Day"],
+
+anteriorposterior: ["Anterior Day (Front Muscles)","Posterior Day (Back Muscles)"],
+
+fullbody: ["Full Body Day"]
+
+};
+
+const stretches = {
+
+/* PUSH */
+"Push Day":[
+"Arm Circles – 30 sec",
+"Chest Opener Stretch – 30 sec",
+"Shoulder External Rotation – 15 reps",
+"Light Push-ups – 15 reps"
+],
+
+/* PULL */
+"Pull Day":[
+"Lat Stretch – 30 sec",
+"Band Rows Warmup – 15 reps",
+"Shoulder Rolls – 20 reps",
+"Cat-Cow Stretch – 30 sec"
+],
+
+/* LEGS */
+"Leg Day":[
+"Leg Swings – 15 each leg",
+"Bodyweight Squats – 15 reps",
+"Hamstring Dynamic Stretch – 30 sec",
+"Lunges – 10 reps"
+],
+
+/* UPPER */
+"Upper Day":[
+"Arm Circles – 30 sec",
+"Band Pull Apart – 15 reps",
+"Push-ups – 15 reps",
+"Lat Stretch – 30 sec"
+],
+
+/* LOWER */
+"Lower Day":[
+"Leg Swings – 15 reps",
+"Glute Bridges – 15 reps",
+"Hip Flexor Stretch – 30 sec",
+"Bodyweight Squats – 15 reps"
+],
+
+/* BRO SPLIT */
+"Chest Day":[
+"Chest Opener – 30 sec",
+"Arm Circles – 30 sec",
+"Light Push-ups – 15 reps"
+],
+
+"Back Day":[
+"Lat Stretch – 30 sec",
+"Shoulder Rolls – 20 reps",
+"Band Rows – 15 reps"
+],
+
+"Shoulders Day":[
+"Arm Circles – 30 sec",
+"Overhead Stretch – 30 sec",
+"Band External Rotation – 15 reps"
+],
+
+"Arms Day":[
+"Bicep Stretch – 30 sec",
+"Tricep Stretch – 30 sec",
+"Wrist Rotations – 30 sec"
+],
+
+/* ANTERIOR */
+"Anterior Day (Front Muscles)":[
+"Chest Opener – 30 sec",
+"Hip Flexor Stretch – 30 sec",
+"Light Push-ups – 15 reps"
+],
+
+/* POSTERIOR */
+"Posterior Day (Back Muscles)":[
+"Hamstring Stretch – 30 sec",
+"Glute Activation – 15 reps",
+"Lat Stretch – 30 sec"
+],
+
+/* FULL BODY */
+"Full Body Day":[
+"Jumping Jacks – 30 sec",
+"Arm Circles – 30 sec",
+"Leg Swings – 15 reps",
+"Bodyweight Squats – 15 reps"
+]
+
+};
+
+function loadDays(){
+
+let system=document.getElementById("systemSelect").value;
+let daySelect=document.getElementById("daySelect");
+
+daySelect.innerHTML="";
+
+if(!system){
+daySelect.style.display="none";
+return;
+}
+
+systems[system].forEach(day=>{
+let option=document.createElement("option");
+option.value=day;
+option.textContent=day;
+daySelect.appendChild(option);
+});
+
+daySelect.style.display="inline-block";
+}
+
+function showStretch(){
+
+let selectedDay=document.getElementById("daySelect").value;
+let resultBox=document.getElementById("resultBox");
+
+if(!selectedDay){
+alert("Please select training system and day");
+return;
+}
+
+resultBox.style.display="block";
+
+resultBox.innerHTML=`
+<h2>Recommended Pre-Workout Stretches</h2>
+${stretches[selectedDay].map(s=>`<div class="stretch-item">✔ ${s}</div>`).join("")}
+`;
+
+}
+
+</script>
+
+</body>
+</html>
